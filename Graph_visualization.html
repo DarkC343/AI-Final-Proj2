@@ -1,0 +1,367 @@
+<!-- START SIGMA IMPORTS -->
+<script src="Js/src/sigma.core.js"></script>
+<script src="Js/src/conrad.js"></script>
+<script src="Js/src/utils/sigma.utils.js"></script>
+<script src="Js/src/utils/sigma.polyfills.js"></script>
+<script src="Js/src/sigma.settings.js"></script>
+<script src="Js/src/classes/sigma.classes.dispatcher.js"></script>
+<script src="Js/src/classes/sigma.classes.configurable.js"></script>
+<script src="Js/src/classes/sigma.classes.graph.js"></script>
+<script src="Js/src/classes/sigma.classes.camera.js"></script>
+<script src="Js/src/classes/sigma.classes.quad.js"></script>
+<script src="Js/src/classes/sigma.classes.edgequad.js"></script>
+<script src="Js/src/captors/sigma.captors.mouse.js"></script>
+<script src="Js/src/captors/sigma.captors.touch.js"></script>
+<script src="Js/src/renderers/sigma.renderers.canvas.js"></script>
+<script src="Js/src/renderers/sigma.renderers.webgl.js"></script>
+<script src="Js/src/renderers/sigma.renderers.svg.js"></script>
+<script src="Js/src/renderers/sigma.renderers.def.js"></script>
+<script src="Js/src/renderers/webgl/sigma.webgl.nodes.def.js"></script>
+<script src="Js/src/renderers/webgl/sigma.webgl.nodes.fast.js"></script>
+<script src="Js/src/renderers/webgl/sigma.webgl.edges.def.js"></script>
+<script src="Js/src/renderers/webgl/sigma.webgl.edges.fast.js"></script>
+<script src="Js/src/renderers/webgl/sigma.webgl.edges.arrow.js"></script>
+<script src="Js/src/renderers/canvas/sigma.canvas.labels.def.js"></script>
+<script src="Js/src/renderers/canvas/sigma.canvas.hovers.def.js"></script>
+<script src="Js/src/renderers/canvas/sigma.canvas.nodes.def.js"></script>
+<script src="Js/src/renderers/canvas/sigma.canvas.edges.def.js"></script>
+<script src="Js/src/renderers/canvas/sigma.canvas.edges.curve.js"></script>
+<script src="Js/src/renderers/canvas/sigma.canvas.edges.arrow.js"></script>
+<script src="Js/src/renderers/canvas/sigma.canvas.edges.curvedArrow.js"></script>
+<script src="Js/src/renderers/canvas/sigma.canvas.edgehovers.def.js"></script>
+<script src="Js/src/renderers/canvas/sigma.canvas.edgehovers.curve.js"></script>
+<script src="Js/src/renderers/canvas/sigma.canvas.edgehovers.arrow.js"></script>
+<script src="Js/src/renderers/canvas/sigma.canvas.edgehovers.curvedArrow.js"></script>
+<script src="Js/src/renderers/canvas/sigma.canvas.extremities.def.js"></script>
+<script src="Js/src/renderers/svg/sigma.svg.utils.js"></script>
+<script src="Js/src/renderers/svg/sigma.svg.nodes.def.js"></script>
+<script src="Js/src/renderers/svg/sigma.svg.edges.def.js"></script>
+<script src="Js/src/renderers/svg/sigma.svg.edges.curve.js"></script>
+<script src="Js/src/renderers/svg/sigma.svg.labels.def.js"></script>
+<script src="Js/src/renderers/svg/sigma.svg.hovers.def.js"></script>
+<script src="Js/src/middlewares/sigma.middlewares.rescale.js"></script>
+<script src="Js/src/middlewares/sigma.middlewares.copy.js"></script>
+<script src="Js/src/misc/sigma.misc.animation.js"></script>
+<script src="Js/src/misc/sigma.misc.bindEvents.js"></script>
+<script src="Js/src/misc/sigma.misc.bindDOMEvents.js"></script>
+<script src="Js/src/misc/sigma.misc.drawHovers.js"></script>
+<script type="text/javascript" src="Colored.json"></script>
+<script src="Js/src/FileSaver.js"></script>
+<!-- END SIGMA IMPORTS -->
+<script src="Js/plugins/sigma.plugins.dragNodes/sigma.plugins.dragNodes.js"></script>
+<div id="container">
+    <style>
+        #graph-container {
+            top: 100;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            position: absolute;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+        }
+    </style>
+    <table style="width:100%; background-color: ghostwhite;">
+        <tr>
+            <th style="background-color: gainsboro">&#11088; Open existing graph</th>
+            <td>1. Open graph<input style="float: right" type="file" name="file" id="file"></td>
+            <td>2. Run program (Main.exe) if you have not already done so, Click refresh<button style="float: right" id="refresh">Refresh</button></td>
+        </tr>
+    </table>
+
+
+    </br>
+    <table style="width:100%; background-color: ghostwhite;">
+        <tr>
+            <th style="background-color: gainsboro">Create new graph (rand)</th>
+            <td>1. Node count<input id="node_count" style="float: right" type="number" value="10"></td>
+            <td>2. Color count<input id="color_count" style="float: right" type="number" value="20"></td>
+            <td>3. Generate<button style="float: right" id="generate">Generate</button></td>
+            <td>4. Save to file<button style="float: right" id="save">Save</button></td>
+            <td>5. Copy/paste map, Run program, Refresh the page and then do &#11088;</td>
+        </tr>
+    </table>
+    <div id="graph-container"></div>
+    <table style="width:100%; bottom: 10; position:fixed; background-color: powderblue;">
+        <tr>
+            <th>By: Amir Mohammad Biuki</th>
+            <th>Shahed University - Mordad 99</th>
+            <th>Backtracking, Forward checking, Minimum Remaining Value (MRV)</th>
+        </tr>
+    </table>
+</div>
+<script type="text/javascript">
+    var vertices_count = 0;
+    var color_count = 0;
+
+    var s,
+        g = {
+            nodes: [],
+            edges: []
+        };
+
+    var from = [];
+    var to = [];
+
+    document.getElementById('save').addEventListener('click', function () {
+        var nc_cc = vertices_count + ' ' + color_count;
+        let adjacent_matrix = new Array(from.length);
+        for (var i = 0; i < vertices_count; ++i) {
+            adjacent_matrix[i] = new Array(from.length);
+            for (var j = 0; j < vertices_count; ++j) {
+                adjacent_matrix[i][j] = 0;
+            }
+        }
+        for (var i = 0; i < from.length; i++) {
+            adjacent_matrix[from[i]][to[i]] = 1;
+            adjacent_matrix[to[i]][from[i]] = 1;
+        }
+        var adjacent_matrix_text = "";
+        for (var i = 0; i < vertices_count; ++i) {
+            for (var j = 0; j < vertices_count; ++j) {
+                adjacent_matrix_text += adjacent_matrix[i][j];
+                if(j != vertices_count - 1) adjacent_matrix_text += " ";
+            }
+            if(i != vertices_count - 1) adjacent_matrix_text += "\n";
+        }
+        var blob = new Blob([nc_cc  + "\n" + adjacent_matrix_text],
+                { type: "text/plain;charset=utf-8" });
+        saveAs(blob, "Sample_Generated_Graph.txt");
+    });
+
+    document.getElementById('generate').addEventListener('click', function () {
+        vertices_count = 0;
+        color_count = 0;
+
+        g = {
+            nodes: [],
+            edges: []
+        };
+        if (s) {
+            s.graph.clear();
+            s.refresh();
+        }
+
+        from = [];
+        to = [];
+
+        vertices_count = document.getElementById("node_count").value;
+        color_count = document.getElementById("color_count").value;
+        for (var i = 0; i < vertices_count; ++i) {
+            g.nodes.push({
+                id: 'n' + i,
+                label: 'Node ' + i,
+                x: Math.random(),
+                y: Math.random(),
+                size: 1,
+                color: '#666'
+            });
+        }
+
+        var t = 0;
+        var f = 0;
+        for (var i = 0; i < vertices_count * (vertices_count - 1) / 2; ++i) {
+            do
+            {
+                t = Math.random() * vertices_count | 0;
+                f = Math.random() * vertices_count | 0;
+            } while(t == f)
+            //from.push(Math.random() * vertices_count | 0);
+            from.push(t);
+            //to.push(Math.random() * vertices_count | 0);
+            to.push(f);
+            g.edges.push({
+                id: 'e' + i,
+                source: 'n' + from[i],
+                target: 'n' + to[i],
+                size: 1,
+                color: '#ccc'
+            });
+        }
+
+        // Instantiate sigma:
+        s = new sigma({
+            graph: g,
+            container: 'graph-container'
+        });
+
+        // Initialize the dragNodes plugin:
+        var dragListener = sigma.plugins.dragNodes(s, s.renderers[0]);
+
+        dragListener.bind('startdrag', function (event) {
+            console.log(event);
+        });
+        dragListener.bind('drag', function (event) {
+            console.log(event);
+        });
+        dragListener.bind('drop', function (event) {
+            console.log(event);
+        });
+        dragListener.bind('dragend', function (event) {
+            console.log(event);
+        });
+    });
+    function refresh() {
+        var mydata = JSON.parse(vertices);
+        for (var i = 0; i < vertices_count; ++i) {
+            console.log(i + ': {' + mydata[i].color + '}');
+            switch (mydata[i].color) {
+                case 0:
+                    s.graph.nodes().filter((obj => obj.id == ('n' + i)))[0].color = '#000000';
+                    s.graph.nodes().filter((obj => obj.id == ('n' + i)))[0].label += ' {ERR}';
+                    break;
+                case 1:
+                    s.graph.nodes().filter((obj => obj.id == ('n' + i)))[0].color = '#FF0000';
+                    s.graph.nodes().filter((obj => obj.id == ('n' + i)))[0].label += ' {c: 1}';
+                    break;
+                case 2:
+                    s.graph.nodes().filter((obj => obj.id == ('n' + i)))[0].color = '#00FF00';
+                    s.graph.nodes().filter((obj => obj.id == ('n' + i)))[0].label += ' {c: 2}';
+                    break;
+                case 3:
+                    s.graph.nodes().filter((obj => obj.id == ('n' + i)))[0].color = '#0000FF';
+                    s.graph.nodes().filter((obj => obj.id == ('n' + i)))[0].label += ' {c: 3}';
+                    break;
+                case 4:
+                    s.graph.nodes().filter((obj => obj.id == ('n' + i)))[0].color = '#FFFF00';
+                    s.graph.nodes().filter((obj => obj.id == ('n' + i)))[0].label += ' {c: 4}';
+                    break;
+                case 5:
+                    s.graph.nodes().filter((obj => obj.id == ('n' + i)))[0].color = '#00FFFF';
+                    s.graph.nodes().filter((obj => obj.id == ('n' + i)))[0].label += ' {c: 5}';
+                    break;
+                case 6:
+                    s.graph.nodes().filter((obj => obj.id == ('n' + i)))[0].color = '#FF00FF';
+                    s.graph.nodes().filter((obj => obj.id == ('n' + i)))[0].label += ' {c: 6}';
+                    break;
+                case 7:
+                    s.graph.nodes().filter((obj => obj.id == ('n' + i)))[0].color = '#C0C0C0';
+                    s.graph.nodes().filter((obj => obj.id == ('n' + i)))[0].label += ' {c: 7}';
+                    break;
+                case 8:
+                    s.graph.nodes().filter((obj => obj.id == ('n' + i)))[0].color = '#800000';
+                    s.graph.nodes().filter((obj => obj.id == ('n' + i)))[0].label += ' {c: 8}';
+                    break;
+                case 9:
+                    s.graph.nodes().filter((obj => obj.id == ('n' + i)))[0].color = '#808000';
+                    s.graph.nodes().filter((obj => obj.id == ('n' + i)))[0].label += ' {c: 9}';
+                    break;
+                case 10:
+                    s.graph.nodes().filter((obj => obj.id == ('n' + i)))[0].color = '#008000';
+                    s.graph.nodes().filter((obj => obj.id == ('n' + i)))[0].label += ' {c: 10}';
+                    break;
+                case 11:
+                    s.graph.nodes().filter((obj => obj.id == ('n' + i)))[0].color = '#800080';
+                    s.graph.nodes().filter((obj => obj.id == ('n' + i)))[0].label += ' {c: 111}';
+                    break;
+                case 12:
+                    s.graph.nodes().filter((obj => obj.id == ('n' + i)))[0].color = '#008080';
+                    s.graph.nodes().filter((obj => obj.id == ('n' + i)))[0].label += ' {c: 12}?';
+                    break;
+                case 13:
+                    s.graph.nodes().filter((obj => obj.id == ('n' + i)))[0].color = '#000080';
+                    s.graph.nodes().filter((obj => obj.id == ('n' + i)))[0].label += ' {c: 13}';
+                    break;
+                default:
+                    s.graph.nodes().filter((obj => obj.id == ('n' + i)))[0].color = 'rgb(' + Math.floor(Math.random() * 256 ) + ',' + Math.floor(Math.random() * 256 ) + ',' + Math.floor(Math.random() * 256 ) + ')';
+                    s.graph.nodes().filter((obj => obj.id == ('n' + i)))[0].label = s.graph.nodes().filter((obj => obj.id == ('n' + i)))[0].label + ' {c: ' + mydata[i].color + '}';
+                    break;
+            }
+        }
+        s.refresh();
+    };
+    document.getElementById('refresh').addEventListener('click', refresh);
+
+    document.getElementById('file').onchange = function(){
+
+        var file = this.files[0];
+        console.log(this.files[0]);
+
+        var reader = new FileReader();
+        reader.onload = function(progressEvent){
+            // Entire file
+            console.log(this.result);
+
+            // By lines
+            var lines = this.result.split('\n');
+            vertices_count = lines[0].split(' ')[0];
+
+            for (var i = 0; i < vertices_count; ++i) {
+                g.nodes.push({
+                    id: 'n' + i,
+                    label: 'Node ' + i,
+                    x: Math.random(),
+                    y: Math.random(),
+                    size: 1,
+                    color: '#666'
+                });
+                console.log('n' + i);
+            }
+
+            color_count = lines[0].split(' ')[1];
+            console.log(vertices_count);
+            console.log(color_count);
+
+            //for (var i = 1; i < lines.length; ++i)
+            //{
+            //    for (var j = 0; j < vertices_count; ++j)
+            //    {
+            //        //console.log(lines[i].split(' ')[j]);
+            //        console.log(lines[i].split(' ')[j]);
+            //    }
+            //    console.log('\n');
+            //}
+            var e_index = 0;
+            for (var i = 2; i < lines.length; ++i)
+            {
+                for (var j = 0; j < i-1; ++j)
+                {
+                    if (lines[i].split(' ')[j] == 1) {
+                        var i_minus_one = i - 1;
+                        //console.log('n' + i_minus_one);
+                        console.log(i_minus_one + ' --> ' + j);
+                        g.edges.push({
+                            id: 'e' + e_index,
+                            source: 'n' + i_minus_one,
+                            target: 'n' + j,
+                            size: 1,
+                            color: '#ccc'
+                        });
+                        e_index++;
+                    }
+                }
+                console.log("----\n");
+            }
+            // Instantiate sigma:
+            s = new sigma({
+                graph: g,
+                container: 'graph-container'
+            });
+
+            // Initialize the dragNodes plugin:
+            var dragListener = sigma.plugins.dragNodes(s, s.renderers[0]);
+
+            dragListener.bind('startdrag', function (event) {
+                console.log(event);
+            });
+            dragListener.bind('drag', function (event) {
+                console.log(event);
+            });
+            dragListener.bind('drop', function (event) {
+                console.log(event);
+            });
+            dragListener.bind('dragend', function (event) {
+                console.log(event);
+            });
+        
+        };
+        reader.readAsText(file);
+    };
+
+</script>
+<script>
+    var i;
+        
+</script>
