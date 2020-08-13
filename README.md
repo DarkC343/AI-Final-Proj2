@@ -1,5 +1,8 @@
 # AI-Final-Proj2
-My AI final project, Constraint graph coloring using backtracking, forward checking and Minimum Remaining Value (MRV). Matrials used: `sigma.js - v1.2.1` for node representation. `FileSaver.js` to export a file from webpage. The logic is done in `C` language.
+My AI final project, Constraint graph coloring using backtracking, forward checking and Minimum Remaining Value (MRV).<br />
+Matrials used: `sigma.js - v1.2.1` for node representation. `FileSaver.js` to export a file from webpage. The logic is done in `C` language.
+<p align="center"><img src="https://drive.google.com/uc?export=view&id=1prNb_LYhx-zngrFcvC4jc7w3fRykTxLr"></p>
+<br />
 # How to use
 First, read the steps bellow. You can use `Graph_visualization.html` for viewing graphs. On the web page, options are to open existing graph (from `Map.txt` or what ever file that follow the correct conventions) or to generate new random graph of arbitrary node size and color count. Read the instructions on that page for better understanding of the procedures. Results can be seen in output of `Main.exe` and/or the webpage.\
 Also the time required to caculate and solve the problem is computed and shown at end of each outputs from `Main.exe`.
