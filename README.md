@@ -3,6 +3,7 @@ My AI final project, Constraint graph coloring using backtracking, forward check
 Matrials used: `sigma.js - v1.2.1` for node representation. `FileSaver.js` to export a file from webpage. The logic is done in `C` language.
 <p align="center"><img src="https://raw.githubusercontent.com/DarkC343/AI-Final-Proj2/master/screenshots/graph_representation.png"></p>
 <br />
+
 # How to use
 First, read the steps bellow. You can use `Graph_visualization.html` for viewing graphs. On the web page, options are to open existing graph (from `Map.txt` or what ever file that follow the correct conventions) or to generate new random graph of arbitrary node size and color count. Read the instructions on that page for better understanding of the procedures. Results can be seen in output of `Main.exe` and/or the webpage.\
 Also the time required to caculate and solve the problem is computed and shown at end of each outputs from `Main.exe`.
@@ -13,6 +14,7 @@ Also the time required to caculate and solve the problem is computed and shown a
 On Windows, first open CMD, or PowerShell. Then run `gcc .\Main.c -o Main` to produce `Main.exe` file.
 ## Run
 <p align="center"><img src="https://raw.githubusercontent.com/DarkC343/AI-Final-Proj2/master/screenshots/program_execution.png"></p>
+
 On Windows, simply double click the `Main.exe`. If you also want to see outputs, simply open CMD, or PowerShell and then run `.\Main.exe`.
 
 # Adjacent matrix of graph
