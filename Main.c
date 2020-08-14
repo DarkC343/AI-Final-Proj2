@@ -235,7 +235,7 @@ int main()
 	bool func = solve_csp(graph);
 	clock_t end = clock();
 	double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
-	printf("Elapsed: %f seconds\n", time_spent);
+	printf("Elapsed: %f miliseconds\n", time_spent*1000);
 
 	if (func == true)
 	{
