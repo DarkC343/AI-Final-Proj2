@@ -17,13 +17,16 @@ On Windows, simply double click the `Main.exe`. If you also want to see outputs,
 
 # Adjacent matrix of graph
 <p align="center"><img src="https://raw.githubusercontent.com/DarkC343/AI-Final-Proj2/master/screenshots/adjacency_matrix.png"></p>
-If you want to draw a graph manually, open `Map.txt` and follow the structure bellow.\
+If you want to draw a graph manually, open `Map.txt` and follow the structure bellow.
+
 ```
 NUM_OF_NODES NUM_OF_COLORS
 MATRIX
 ```
+
 Note that all the inputs are delimited by space.
 The input bellow constructs a 10 node graph. 20 colors will be used for coloring problem. Form the second line and on, the adjacent matrix of graph is represented.
+
 ```
 10 20
 0 1 1 0 1 1 1 0 0 0
